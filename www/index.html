@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+
+<head>
+    <!-- .ui-page {
+            background-image: url('http://www.our3dvr.com/data/wallpapers/43/WDF_897511.jpg');
+        }-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	
+   <link rel="stylesheet" href="./css/jquery.mobile-1.4.5.min.css">
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="./js/jquery.mobile-1.4.5.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/style.css" />
+	<link rel="stylesheet" type="text/css" href=default.css>
+	<script type="text/javascript" src="jquery-1.9.js"></script>
+    <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+	
+    <style>
+        .ui-page {
+            background-color:   #ccccff;
+        }
+        
+        .map {
+            line-height: calc(1.5em + 0.5vw);
+            margin: 1.6em;
+        }
+        .try{
+			margin-left: -80px;
+		}
+        .ppp {
+            background-color:  #ff6666;
+        }
+		.show{
+			background-color: #ff6666;
+		}
+    </style>
+	<script>
+	(function (global) {
+
+	if(typeof (global) === "undefined")
+	{
+		throw new Error("window is undefined");
+	}
+
+    var _hash = "!";
+    var noBackPlease = function () {
+        global.location.href += "#";
+
+		// making sure we have the fruit available for juice....
+		// 50 milliseconds for just once do not cost much (^__^)
+        global.setTimeout(function () {
+            global.location.href += "!";
+        }, 50);
+    };
+	
+	// Earlier we had setInerval here....
+    global.onhashchange = function () {
+        if (global.location.hash !== _hash) {
+            global.location.hash = _hash;
+        }
+    };
+
+    global.onload = function () {
+        
+		noBackPlease();
+
+		// disables backspace on page except on input fields and textarea..
+		document.body.onkeydown = function (e) {
+            var elm = e.target.nodeName.toLowerCase();
+            if (e.which === 8 && (elm !== 'input' && elm  !== 'textarea')) {
+                e.preventDefault();
+            }
+            // stopping event bubbling up the DOM tree..
+            e.stopPropagation();
+        };
+		
+    };
+
+	})(window);
+	</script>
+    <script>
+
+		    function onLoad() {
+        		document.addEventListener("deviceready", onDeviceReady, false);
+    		}
+    // device APIs are available
+    //
+    	function onDeviceReady() {
+        // Register the event listener
+       		 document.addEventListener("backbutton", onBackKeyDown, false);
+    	}
+    // Handle the back button
+    //
+    	function onBackKeyDown() {
+   	     //alert('Backbutton key pressed');
+       	 console.log('Backbutton key pressed');
+    	}
+
+		$(function() {
+    		$(window).on("scroll", function() {
+        		if($(window).scrollTop() > 50) {
+            		$(".header").addClass("show");
+        		} else {
+            //remove the background property so it comes transparent again (defined in your css)
+           			$(".header").removeClass("show");
+        		}
+    		});
+		});
+
+        /*
+         * Google Maps documentation: http://code.google.com/apis/maps/documentation/javascript/basics.html
+         * Geolocation documentation: http://dev.w3.org/geo/api/spec-source.html
+         */
+
+       $(document).on("pagecreate", "#map-page", function() {
+            var defaultLatLng = new google.maps.LatLng(34.0983425, -118.3267434); // Default to Hollywood, CA when no geolocation support
+
+            if (navigator.geolocation) {
+                function success(pos) {
+                    // Location found, show map with these coordinates
+                    drawMap(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+                }
+
+                function fail(error) {
+                    drawMap(defaultLatLng); // Failed to find location, show default map
+                }
+
+                // Find the users current position.  Cache the location for 5 minutes, timeout after 6 seconds
+                navigator.geolocation.getCurrentPosition(success, fail, {
+                    maximumAge: 500000,
+                    enableHighAccuracy: true,
+                    timeout: 6000
+                });
+            } else {
+                drawMap(defaultLatLng); // No geolocation support, show default map
+            }
+
+            function drawMap(latlng) {
+                var myOptions = {
+                    zoom: 15,
+                    center: latlng,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+
+                var map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
+
+                // Add an overlay to the map of current lat/lng
+                var marker = new google.maps.Marker({
+                    position: latlng,
+                    map: map,
+                    title: "Greetings!"
+                });
+            }
+        });
+        /*window.onload = function(){
+                document.addEventListener("deviceready", init, false);
+        }
+        function init()
+        {
+                document.getElementById("btnSave").addEventListener("click",saveData, false);
+                document.getElementById("btnGet").addEventListener("click", getData, false);
+        }
+        function saveData()
+        {
+				var tphone = document.getElementById("tphone").value;
+				window.localStorage.setItem("tphn",tphone);
+                alert("Your data is stored successfuly");
+        }*/
+		//var emergencycontact;
+        //function getData()
+        //{
+                /*var output = "Your name is " +
+                              window.localStorage.getItem("fnme") +
+                              " and your phone number is " +
+                              window.localStorage.getItem("phn");
+                document.getElementById("result").innerHTML = output;*/
+		/*		var ephone=window.localStorage.getItem("tphn");
+				document.getElementById("sendto").innerHTML=ephone;
+				emergencycontact=window.localStorage.getItem("tphn");
+				emergencycontact.toString();
+        }*/
+//SMS
+		var plzwork;
+		$('#btnSave').on('click', function(){
+
+    	$('input[type="text"]').each(function(){    
+        	var id = $(this).attr('id');
+        	var value = $(this).val();
+       	localStorage.setItem(id, value);
+        
+    	});   
+		});
+			
+		$('#load').on('click', function(){
+    		$('input[type="text"]').each(function(){    
+        	var id = $(this).attr('id');
+        	var value = localStorage.getItem(id);
+        
+        	$(this).val(value);
+        
+    	}); 
+		});
+
+    </script>
+	
+</head>
+
+<body onload="onLoad()">
+
+    <div data-role="page" id="page1">
+        <div class="ppp">
+            <img src="./img/Logo.png" height="90px" class="try">
+        </div>	
+        <div data-role="main" class="ui-content">
+		<br /><br /><br /><br /><br />
+		<div class='container'>
+		  <a href="#helpoptions"><span class='pulse-button'>help!</span></a>
+		</div><br /><br /><br /><br /><br />
+
+            <a href="#form" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-icon-edit ui-btn-icon-left" data-transition="fade">Update Information</a>
+            <a href="maps.html" rel="external" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-icon-location ui-btn-icon-left" data-transition="fade">Check Your Geolocation</a>
+            <a href="#phone_num_cities" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-icon-phone ui-btn-icon-left" style="background: green; color: white;">Emergency Contact Lists</a>
+        </div>
+        <div data-role="footer">
+			<h2></h2>
+        </div>
+    </div>
+
+	
+
+    <div data-role="page" data-dialog="true" id="page2">
+        <div  data-fullscreen="true" data-position="fixed"  data-role="header"  class="ppp">
+            <h2>This is Dialog box</h2>
+        </div>
+        <div data-role="main" class="ui-content">
+            <p>Click the link to go page one.</p>
+            <a href="#page1">Page One</a>
+        </div>
+        <div data-role="footer">
+			<h2></h2>
+        </div>
+    </div>
+    <div data-role="page" id="form">
+        <div  data-fullscreen="true" data-role="header" data-theme="b" class="hn-wrapper ui-bar-b show">
+            <h1 style="font-size:20px;">Save<br />Information</h1>
+        </div><br /><br />
+		
+        <div data-role="main" class="ui-content">
+				<script type="text/javascript">
+  	function html5_storage_support() {
+  		//check to see if this browser support local storage: return true if so, false if not
+		try {
+			return 'localStorage' in window && window['localStorage'] !== null;
+		} catch (e) {
+			return false;
+		}
+	}
+  	function save() {
+		alert("Information Saved.");
+  		if (html5_storage_support()) {
+  			//get the user-entered values from the two text fields:
+  			var fname = document.getElementById("fname").value;
+			var tphone=document.getElementById("tphone").value;
+			//create two local-storage keys (name1, name2) and assign
+  			//each the respective value from the text fields:
+  			localStorage.setItem('fname',fname);
+			localStorage.setItem('tphone',tphone);
+  		}
+  	}
+
+  	function set() {
+  		if (html5_storage_support()) {
+  			//set the value of each text field from the stored values:
+  			document.getElementById('fname').value = localStorage.getItem('fname');
+			document.getElementById('tphone').value= localStorage.getItem('tphone');
+  		}
+  	}
+  </script>
+                <label for="fname" style="font-weight: bolder;">Name</label>
+                <input type="text" name="fname" id="fname" placeholder="Full Name">
+               
+				<label for="phonenumber" style="font-weight: bolder;">Family/Friend Contact Number</label>
+                <input type="number" id="tphone" placeholder="Enter Phone" pattern=".{7,10}" required title="7 to 10 digits required.">			
+		
+                <label for="date" style="font-weight: bolder;">Birth Date</label>
+                <input type="date" name="date" id="date" >
+				<label for="gender" style="font-weight: bolder;">Gender</label>
+                 <label for="radio1">
+                    <input type="radio" name="radio-choice-0" id="radio1">Male</input>
+                    </label>
+                <label for="radio2">
+                    <input type="radio" name="radio-choice-0" id="radio2">Female</input>
+                 </label>
+                <center><button id="save" data-inline="true" data- corner="true" onclick="save()">Save Data</button></center><br />
+				<center><button id="load" data-inline="true" data-corner="true" onclick="set()">Get Info</button></center><br />
+				<center> <a href="#page1" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Back</a>
+                </center>
+        </div>
+    </div>
+	<div data-role="page" id="phone_num_cities">
+		<div  data-fullscreen="true" data-position="fixed"  data-role="header" data-theme="b" class="hn-wrapper ui-bar-b show">
+            <h2 style="font-size:20px;">Emergency<br />Lists</h2>
+        </div><br /><br /><br /><br />
+        <div data-role="header" >
+            <p><a href="#page1" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+		<center><img src="https://image.flaticon.com/icons/svg/13/13936.svg" height="100px"/></center>
+		<div data-role = "main" class = "ui-content">
+            <a href = "#assam" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Assam(Guwahati)</a>
+			<a href = "#kolkata" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Kolkata</a><br />
+			<a href = "#chennai" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Chennai</a>
+			<a href = "#hyderabad" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Hyderabad</a><br />
+			<a href = "#ahmedabad" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Ahmedabad</a>
+			<a href = "#pune" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Pune</a><br />
+			<a href = "#bangalore" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Bangalore</a>
+			<a href = "#newdelhi" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">New Delhi</a><br />
+			<a href = "#mumbai" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Mumbai</a>
+			<a href = "#bihar" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Bihar</a><br />
+			<a href = "#punjab" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Punjab</a>
+			<a href = "#kerala" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Kerala</a><br />
+			<a href = "#meghalaya" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Meghalaya</a>
+			<a href = "#manipur" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Manipur</a><br />
+			<a href = "#arunachal" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Arunachal Pradesh</a>
+			<a href = "#odisha" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Odisha</a><br />
+			<a href = "#himachal" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Himachal Pradesh</a>
+			<a href = "#rajasthan" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Rajasthan</a><br />
+			<a href = "#goa" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Goa</a>
+			<a href = "#haryana" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Haryana</a><br />
+			<a href = "#jharkhand" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Jharkhand</a>
+			<a href = "#surat" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Surat</a><br />
+			<a href = "#uttar" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Uttar Pradesh</a>
+			<a href = "#mizoram" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Mizoram</a><br />
+			<a href = "#nagaland" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Nagaland</a>
+			<a href = "#tripura" class = "ui-shadow ui-btn ui-corner-all ui-btn-inline ">Tripura</a><br />
+
+         </div>
+		 <div data-role="footer">
+            <h2></h2>
+        </div>
+	</div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="assam">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+	
+        <div class="ambulance">
+			
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Address: </h4>
+                <p>Raghunath Path, Kalapahar Colony, Dhirenpara, Guwahati, Assam 781009</p>
+                <h4>Phone no. :</h4>
+                <p>070705 69742</p>
+				<h4>Phone no. :</h4>
+                <p>108</p>
+				<!--<input type="button" id="btnCall" value="Dial Now" onclick="btnCallFun();" />-->
+				<button><a href="tel://108">Dial Now</a></button>
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_assam" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_assam">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+			
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Address: </h4>
+                <p>Navagiri Rd, Chandmari Colony, Nizarpar, Krishna Nagar, Chandmari, Guwahati, Assam 781003</p>
+                <h4>Phone no. :</h4>
+                <p>0361 266 5000</p>
+				<h4>Phone no. :</h4>
+                <p>102</p>
+				<button><a href="tel://102">Dial Now</a></button>
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_assam" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_assam">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+			
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Address: </h4>
+                <p>N.H. 37, New Colony, Azara, Guwahati, Assam 781017</p>
+                <h4>Phone no. :</h4>
+                <p>+36 1 284 0287</p>
+				<h4>Phone no. :</h4>
+                <p>100</p>
+				<button><a href="tel://100">Dial Now</a></button>
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_assam" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="kolkata">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Address: </h4>
+                <p>Dhanwantary</p>
+                <h4>Phone no. :</h4>
+                <p>24495594</p><br />
+				<button><a href="tel://24495594">Dial Now</a></button>
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_kolkata" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_kolkata">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Address: </h4>
+                <p>Baisnabghata</p>
+                <h4>Phone no. :</h4>
+                <p>24360685</p>
+				<button><a href="tel://24360685">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_kolkata" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_kolkata">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p>
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_kolkata" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="chennai">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+                <h4>Phone no. :</h4>
+                <p>108</p><br />
+				<button><a href="tel://108">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_chennai" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_chennai">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+                <h4>Phone no. :</h4>
+                <p>101</p>
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_chennai" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_chennai">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p>
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_chennai" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="hyderabad">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+               
+                <h4>Phone no. :</h4>
+                <p>102</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_hyderabad" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_hyderabad">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p>
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_hyderabad" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_hyderabad">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+                <h4>Phone no. :</h4>
+                <p>100</p>
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_hyderabad" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="ahmedabad">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102/108</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_ahmedabad" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_ahmedabad">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p>
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_ahmedabad" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_ahmedabad">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+				<h4>Phone no: </h4>
+                <p>100</p>
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_ahmedabad" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="pune">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_pune" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_pune">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+                
+                <h4>Phone no. :</h4>
+                <p>101</p>
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_pune" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_pune">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p>
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_pune" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="bangalore">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>108</p><br />
+				<button><a href="tel://108">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_bangalore" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_bangalore">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>080-22971500</p>
+				<button><a href="tel://22971500">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_bangalore" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_bangalore">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Address: </h4>
+                <p>East</p>
+                <h4>Phone no. :</h4>
+                <p>25588566</p>
+				<h4>Address: </h4>
+                <p>West</p>
+                <h4>Phone no. :</h4>
+                <p>23592771</p>
+				<h4>Address: </h4>
+                <p>Police Commissioner</p>
+                <h4>Phone no. :</h4>
+                <p>98440-99707, 080-22260707 / 22256242</p>
+				<button><a href="tel://22256242">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_bangalore" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="newdelhi">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_newdelhi" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_newdelhi">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p>
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_newdelhi" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_newdelhi">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p>
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_newdelhi" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="mumbai">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_mumbai" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_mumbai">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p>
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_mumbai" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_mumbai">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p>
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_mumbai" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="bihar">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_bihar" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_bihar">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p><br />
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_bihar" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_bihar">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_bihar" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="punjab">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_punjab" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_punjab">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p><br />
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_punjab" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_punjab">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_punjab" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="kerala">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_kerala" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_kerala">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p><br />
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_kerala" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_kerala">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_kerala" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="meghalaya">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>108</p><br />
+				<button><a href="tel://108">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_meghalaya" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_meghalaya">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>2227000</p><br />
+				<button><a href="tel://2227000">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_meghalaya" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_meghalaya">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_meghalaya" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="manipur">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Address: </h4>
+                <p>Imphal Hospital</h4>
+                <h4>Phone no. :</h4>
+                <p>2411353</p><br />
+				<button><a href="tel://2411353">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_manipur" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_manipur">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p><br />
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_manipur" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_manipur">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>2220100</p><br />
+				<button><a href="tel://2220100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_manipur" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="arunachal">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_arunachal" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_arunachal">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p><br />
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_arunachal" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_arunachal">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_arunachal" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="odisha">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>108</p><br />
+				<button><a href="tel://108">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_odisha" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_odisha">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_odisha" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_odisha">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_odisha" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="himachal">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102/108</p><br />
+				<button><a href="tel://108">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_himachal" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_himachal">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p><br />
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_himachal" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_himachal">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_himachal" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="rajasthan">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102/104/108</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_rajasthan" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_rajasthan">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p><br />
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_rajasthan" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_rajasthan">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_rajasthan" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="goa">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102/108</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_goa" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_goa">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p><br />
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_goa" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_goa">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_goa" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="haryana">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102/2782457</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_haryana" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_haryana">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p><br />
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_haryana" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_haryana">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_haryana" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="jharkhand">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102/108</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_jharkhand" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_jharkhand">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p><br />
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_jharkhand" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_jharkhand">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p>
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_jharkhand" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="surat">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>108</p><br />
+				<button><a href="tel://108">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_surat" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_surat">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p><br />
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_surat" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_surat">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_surat" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="uttar">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>102/108</p><br />
+				<button><a href="tel://102">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_uttar" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_uttar">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101</p><br />
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_uttar" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_uttar">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_uttar" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="mizoram">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Address: </h4>
+                <p>Civil Hospital (Casualty), Aizawl</p>
+                <h4>Phone no. :</h4>
+                <p>0389-2322318</p><br />
+				<button><a href="tel://2322318">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_mizoram" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_mizoram">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101/ 0389-2322337/ 2322380</p>
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_mizoram" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_mizoram">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_mizoram" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="nagaland">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>0370-2222952</p><br />
+				<button><a href="tel://2222952">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_nagaland" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_nagaland">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Address: </h4>
+                <p>Naga hospital</p>
+                <h4>Phone no. :</h4>
+                <p>2222893</p>
+				<button><a href="tel://2222893">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_nagaland" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_nagaland">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>100</p><br />
+				<button><a href="tel://100">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_nagaland" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+    </div>
+	<div data-role="page" data-dialog="true" data-close-btn="none" id="tripura">
+        <div data-fullscreen="true" data-position="fixed" data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/ambulance.svg" height="100px" /></center>
+            <center>
+                <h4>Ambulance:</h4>
+
+                <h4>Address: </h4>
+                <p>Agartala Hospital</p>
+                <h4>Phone no. :</h4>
+                <p>2309665</p><br />
+				<button><a href="tel://2309665">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_tripura" class="ui-btn ui-corner-all">Fire Brigade</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="fire_num_tripura">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/fire-truck.svg" height="100px" /></center>
+            <center>
+                <h4>Fire Brigade:</h4>
+
+                <h4>Phone no. :</h4>
+                <p>101/2225630</p>
+				<button><a href="tel://101">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#police_num_tripura" class="ui-btn ui-corner-all">Police Station</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+    </div>
+    <div data-role="page" data-dialog="true" data-close-btn="none" id="police_num_tripura">
+        <div data-role="header">
+            <h1>Phone Numbers</h1>
+        </div>
+        <div class="ambulance">
+            <center><img src="./img/police.svg" height="100px" /></center>
+            <center>
+                <h4>Police Station:</h4>
+
+                <h4>Address: </h4>
+                <p>City Control</p>
+                <h4>Phone no. :</h4>
+                <p>2325784</p><br />
+				<button><a href="tel://2325784">Dial Now</a></button>				
+            </center>
+
+        </div>
+        <div role="main" class="ui-content">
+            <p><a href="#fire_num_tripura" class="ui-btn ui-corner-all">Back</a></p>
+            <p><a href="#phone_num_cities" class="ui-btn ui-corner-all">Lists</a></p>
+        </div>
+
+    </div>
+<div data-role="page" id="map-page2">
+        <div data-role="header" data-theme="a">
+            <p><a href="#page1" class="ui-btn ui-corner-all">Back</a></p>
+        </div>
+
+        <div role="main" class="ui-content map" id="map-canvas">
+            <!-- map loads here... -->
+
+        </div>
+    </div>
+	<div data-role="page" id="sms">
+		<div data-role="header" class="show">
+            <a href="#helpoptions" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Back</a>
+        </div><br /><br />
+		<div id="fullpage">
+			To:<input type="text" size=16 id="sendto"/><br/>
+			Text:<textarea rows="5" cols="30" id="textmsg" placeholder="Help, I'm in Danger!"></textarea><br/>
+			<button onclick="sendSMS();">Send</button>
+            <hr/>
+            <button onclick="getGeolocation()">Get Geolocation</button>
+			<input id="textgeo" placeholder="Coordinates: "></input>
+       </div>
+		<script type="text/javascript" charset="utf-8">
+			var x=document.getElementById("textgeo");
+			var onSuccess = function(position) {
+        		/*alert('Latitude: '          + position.coords.latitude          + '\n' +
+              'Longitude: '         + position.coords.longitude         + '\n' +
+              'Altitude: '          + position.coords.altitude          + '\n' +
+              'Accuracy: '          + position.coords.accuracy          + '\n' +
+              'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
+              'Heading: '           + position.coords.heading           + '\n' +
+              'Speed: '             + position.coords.speed             + '\n' +
+              'Timestamp: '         + position.timestamp                + '\n');*/
+				x.value="Latitude: " + position.coords.latitude + " Longitude: "+
+				position.coords.longitude + " Altitude: " + position.coords.altitude;
+   		 };
+
+    		// onError Callback receives a PositionError object
+    		//
+    		function onError(error) {
+       		 alert('code: '    + error.code    + '\n' +
+        	      'message: ' + error.message + '\n');
+   			 }
+	
+    	navigator.geolocation.getCurrentPosition(onSuccess, onError);
+
+        </script>
+		<div data-role="footer">
+            <h2></h2>
+        </div>
+	</div>
+	<div data-role="page" id="places">
+		<div data-role="header">
+            <h1>Emergency Options</h1>
+        </div>
+		<div data-role="header" class="show">
+            <a href="#helpoptions" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Back</a>
+        </div>
+		<div class="border bgc">
+    	<center>
+    	<h6>Show/Hide</h6><br />
+    	<button id=toggle >toggle</button>
+    	</center>
+		</div>
+		<div id=togglePane class=hide >
+		<iframe id=thing src="https://www.script-tutorials.com/demos/275/index.html" frameborder="0" scrolling="yes"></iframe>
+		<script type="text/javascript" src="fastclick.js"></script>
+		<script type="text/javascript" src="zepto-1.1.6.js"></script>
+		<script type="text/javascript" src="app.js"></script>
+		</div>
+		<div data-role="footer">
+            <h2></h2>
+        </div>
+	</div>
+
+	<div data-role="page" id="helpoptions">
+		<div  data-fullscreen="true" data-role="header" data-theme="b" class="hn-wrapper ui-bar-b show">
+            <h3 style="font-size:20px;">Emergency<br />Options</h3>
+        </div>
+		<div data-role="header" class="show">
+            <a href="#page1" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Back</a>
+        </div><br /><br />
+		<center><img src="https://image.flaticon.com/icons/svg/139/139775.svg" height="100px" /></center><br />
+		<h5 style="font-weight: bolder;">Send Message To Friend:</h5>
+		<div id="custom-border-radius">
+    		<a href="sms.html" rel="external" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn ui-icon-grid ui-corner-all ui-btn-icon-left">Message</a>
+		<div>
+		<h5 style="font-weight: bolder;">Search for nearest help:</h5>
+		<div id="custom-border-radius">
+		    		<a href="googleplaces.html" rel="external" class="ui-shadow ui-btn ui-icon-location ui-corner-all ui-corner-all ui-btn-inline ui-corner-all ui-btn-icon-left">Nearest Help</a>	
+		<div>
+		<h5 style="font-weight: bolder;">Open Camera:</h5>
+		<div id="custom-border-radius">
+    		<a href="camera.html" rel="external" class="ui-shadow ui-btn ui-icon-circle-zoomin ui-corner-all ui-btn-inline ui-corner-all ui-btn-icon-left">Camera</a>
+		<div>
+		<h5 style="font-weight: bolder;">Call Saved Emergency Contact Number:</h5>		
+		<a onclick="btnCallFun();" style="background: green; color: white;" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-icon-phone ui-btn-icon-left">Emergency Contact</a>
+		<br />		
+		<div data-role="footer">
+			<h2></h2>
+        </div>
+		<script type="text/javascript">
+				var emerge=localStorage.getItem('tphone');
+				var callmeplz=emerge.toString();
+				function btnCallFun(){
+					window.location.href="tel:"+callmeplz;
+				}
+		</script>
+    </div>
+	
+    <script type="text/javascript" src="js/app.js"></script>
+</body>
+
+</html>

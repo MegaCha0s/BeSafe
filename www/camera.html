@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="./js/jquery.mobile-1.4.5.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/style.css" />
+   <link rel="stylesheet" href="./css/jquery.mobile-1.4.5.min.css">
+<link rel="stylesheet" href="jq/jquery.mobile-1.4.5.css" />
+<script type="text/javascript" src="cordova.js"></script>
+<script src="jq/jquery-3.2.1.js"></script>
+<script src="jq/jquery.mobile-1.4.5.js"></script>
+<title>Blank App</title>
+<script>
+(function (global) {
+
+	if(typeof (global) === "undefined")
+	{
+		throw new Error("window is undefined");
+	}
+
+    var _hash = "!";
+    var noBackPlease = function () {
+        global.location.href += "#";
+
+		// making sure we have the fruit available for juice....
+		// 50 milliseconds for just once do not cost much (^__^)
+        global.setTimeout(function () {
+            global.location.href += "!";
+        }, 50);
+    };
+	
+	// Earlier we had setInerval here....
+    global.onhashchange = function () {
+        if (global.location.hash !== _hash) {
+            global.location.hash = _hash;
+        }
+    };
+
+    global.onload = function () {
+        
+		noBackPlease();
+
+		// disables backspace on page except on input fields and textarea..
+		document.body.onkeydown = function (e) {
+            var elm = e.target.nodeName.toLowerCase();
+            if (e.which === 8 && (elm !== 'input' && elm  !== 'textarea')) {
+                e.preventDefault();
+            }
+            // stopping event bubbling up the DOM tree..
+            e.stopPropagation();
+        };
+		
+    };
+
+})(window);
+</script>
+<script type="text/javascript" charset="utf-8">
+var pictureSource;
+var destinationType;
+
+document.addEventListener("deviceready",onDeviceReady,false);
+function onDeviceReady() {
+pictureSource=navigator.camera.PictureSourceType;
+destinationType=navigator.camera.DestinationType;
+}
+
+function onPhotoDataSuccess(imageData) {
+var smallImage = document.getElementById('smallImage');
+smallImage.style.display = 'block';
+smallImage.src = "data:image/jpeg;base64," + imageData;
+}
+
+function onPhotoURISuccess(imageURI) {
+alert("inside large image")
+var largeImage = document.getElementById('largeImage');
+largeImage.style.display = 'block';
+largeImage.src = imageURI;
+}
+
+function capturePhoto() {
+navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 50,
+destinationType: destinationType.DATA_URL });
+}
+
+function capturePhotoEdit() {
+navigator.camera.getPicture(onPhotoDataSuccess, onFail,
+{ quality: 20, allowEdit: true,
+destinationType: destinationType.DATA_URL });
+}
+
+function getPhoto(source) {
+navigator.camera.getPicture(onPhotoURISuccess, onFail, { quality: 50, 
+destinationType: destinationType.FILE_URI,
+sourceType: source });
+}
+
+function onFail(message) {
+alert('Failed because: ' + message);
+}
+</script>
+</head>
+<body>
+<div data-role="header" class="show">
+            <a href="index.html#helpoptions" rel="external" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Back</a>
+        </div><br /><br /><br />
+<button onclick="capturePhoto();">Capture Photo</button> <br>
+<button onclick="socialsharingDemo()">SocialSharing *</button>
+<img style="display:none;width:60px;height:60px;" id="smallImage" src="" />
+<img style="display:none;" id="largeImage" src="" />
+
+
+<!-- plugins demo -->
+<script src="js/socialsharing-plugin-demo.js"></script>
+
+</body>
+</html>
